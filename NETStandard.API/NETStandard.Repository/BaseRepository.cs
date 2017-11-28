@@ -8,10 +8,12 @@ namespace NETStandard.Repository
 {
     public class BaseRepository : IDisposable
     {
-        protected IDbConnection connection;
-        public BaseRepository()
+        protected IDbConnection Connection { get { return Transaction.Connection; } }
+        protected IDbTransaction Transaction { get; private set; }
+        public BaseRepository(IDbTransaction transaction)
         {
-            this.connection = new SqlConnection("server=DESKTOP-M9T66IU\\SQLEXPRESS;database=XamarinFormsExample;integrated security=true;MultipleActiveResultSets=true");
+            //this.Connection = new SqlConnection("server=DESKTOP-M9T66IU\\SQLEXPRESS;database=XamarinFormsExample;integrated security=true;MultipleActiveResultSets=true");
+            this.Transaction = transaction;
         }
         public void Dispose()
         {

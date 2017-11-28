@@ -6,43 +6,34 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using Dapper;
+using System.Data;
 
 namespace NETStandard.Repository
 {
     public class MovieRepository : BaseRepository, IRepository<Movie>
     {
-        public async Task<bool> AddAsync(Movie t)
+        public MovieRepository(IDbTransaction transaction) : base(transaction)
         {
-            try
-            {
-                var command = @"INSERT INTO Movies (Title,Description,Duration) VALUES (@title, @desc, @duration) SELECT CAST(SCOPE_IDENTITY() as int)";
-                DynamicParameters parameters = new DynamicParameters();
-                parameters.Add("@title", t.Title);
-                parameters.Add("@desc", t.Description);
-                parameters.Add("@duration", t.Duration);
-                // To get inserted item's id.
-                //var id = SqlMapper.Query<int>(connection, command, parameters).Single();
-                return Convert.ToBoolean(await SqlMapper.ExecuteAsync(connection, command, parameters));
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+
+        }
+        public int Add(Movie t)
+        {
+            var command = @"INSERT INTO Movies (Title,Description,Duration) VALUES (@title, @desc, @duration) SELECT CAST(SCOPE_IDENTITY() as int)";
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("@title", t.Title);
+            parameters.Add("@desc", t.Description);
+            parameters.Add("@duration", t.Duration);
+            // To get inserted item's id.
+            //var id = SqlMapper.Query<int>(connection, command, parameters).Single();
+            return SqlMapper.Execute(Connection, command, parameters, Transaction);
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public int Delete(int id)
         {
-            try
-            {
-                var command = @"DELETE FROM Movies Where Id = @Id";
-                //DynamicParameters parameters = new DynamicParameters();
-                //parameters.Add("@Id", id);
-                return Convert.ToBoolean(await SqlMapper.ExecuteAsync(connection, command, new { Id = id }));
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
+            var command = @"DELETE FROM Movies Where Id = @Id";
+            //DynamicParameters parameters = new DynamicParameters();
+            //parameters.Add("@Id", id);
+            return SqlMapper.Execute(Connection, command, new { Id = id }, Transaction);
         }
 
         /// <summary>
@@ -50,7 +41,7 @@ namespace NETStandard.Repository
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<Movie>> FindByAsync(Func<Movie, bool> predicate)
+        public IEnumerable<Movie> FindBy(Func<Movie, bool> predicate)
         {
             throw new NotImplementedException();
             //db.Query<Person, Address, Person>(
@@ -63,44 +54,34 @@ namespace NETStandard.Repository
             //).ToList();
         }
 
-        public async Task<IEnumerable<Movie>> GetAllAsync()
+        public IEnumerable<Movie> GetAll()
+        {
+            var command = @"SELECT Id,Title,Description,Duration FROM Movies";
+            return SqlMapper.Query<Movie>(Connection, command, transaction: Transaction);
+        }
+
+        public IEnumerable<Movie> GetExecute()
+        {
+            var command = @"SELECT Id,Title,Description,Duration FROM Movies";
+            return SqlMapper.Query<Movie>(Connection, command, transaction: Transaction);
+        }
+
+        public Movie GetById(int id)
         {
             var command = @"SELECT Id,Title,Description,Duration
-                            FROM Movies";
-            return await SqlMapper.QueryAsync<Movie>(connection, command);
-        }
-
-        public async Task<Movie> GetByIdAsync(int id)
-        {
-            try
-            {
-                var command = @"SELECT Id,Title,Description,Duration
                             FROM Movies WHERE Id = @Id";
-                var res = await SqlMapper.QueryAsync<Movie>(connection, command, new { Id = id });
-                return res.FirstOrDefault();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return SqlMapper.Query<Movie>(Connection, command, new { Id = id }, Transaction).FirstOrDefault();
         }
 
-        public async Task<bool> UpdateAsync(Movie t)
+        public int Update(Movie t)
         {
-            try
-            {
-                var command = @"UPDATE Movies SET Title = @title, Description = @desc, Duration= @duration WHERE Id = @Id";
-                DynamicParameters parameters = new DynamicParameters();
-                parameters.Add("@title", t.Title);
-                parameters.Add("@desc", t.Description);
-                parameters.Add("@duration", t.Duration);
-                parameters.Add("@Id", t.Id);
-                return Convert.ToBoolean(await SqlMapper.ExecuteAsync(connection, command, parameters));
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            var command = @"UPDATE Movies SET Title = @title, Description = @desc, Duration= @duration WHERE Id = @Id";
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("@title", t.Title);
+            parameters.Add("@desc", t.Description);
+            parameters.Add("@duration", t.Duration);
+            parameters.Add("@Id", t.Id);
+            return SqlMapper.Execute(Connection, command, parameters, Transaction);
         }
     }
 }

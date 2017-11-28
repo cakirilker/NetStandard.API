@@ -7,11 +7,11 @@ namespace NETStandard.Shared
 {
     public interface IRepository<T> where T : class
     {
-        Task<IEnumerable<T>> GetAllAsync();
-        Task<T> GetByIdAsync(int id);
-        Task<bool> AddAsync(T t);
-        Task<bool> UpdateAsync(T t);
-        Task<bool> DeleteAsync(int id);
-        Task<IEnumerable<T>> FindByAsync(Func<T, bool> predicate);
+        IEnumerable<T> GetAll();
+        T GetById(int id);
+        int Add(T t);
+        int Update(T t);
+        int Delete(int id);
+        IEnumerable<T> FindBy(Func<T, bool> predicate);
     }
 }
