@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NETStandard.Repository;
 using NETStandard.Entities;
 using NETStandard.UnitOfWork;
 using Microsoft.Extensions.Options;
@@ -22,6 +18,7 @@ namespace NETStandard.API.Controllers
             this._connectionString = connection.DbConn;
         }
 
+        // GET: api/movie
         [HttpGet]
         public IActionResult Get()
         {
@@ -32,6 +29,7 @@ namespace NETStandard.API.Controllers
             }
         }
 
+        // GET: api/movie/5
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -47,7 +45,7 @@ namespace NETStandard.API.Controllers
             return new ObjectResult(item);
         }
 
-        // POST: api/Movie
+        // POST: api/movie, json data
         [HttpPost]
         public IActionResult Create([FromBody]Movie movie)
         {
@@ -69,6 +67,7 @@ namespace NETStandard.API.Controllers
             return Ok(x);
         }
 
+        // PUT: api/movie/5, json data
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody]Movie item)
         {
@@ -91,7 +90,7 @@ namespace NETStandard.API.Controllers
             return new NoContentResult();
         }
 
-        // DELETE: api/ApiWithActions/5
+        // DELETE: api/movie/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

@@ -1,5 +1,5 @@
 ﻿using NETStandard.Entities;
-using NETStandard.Shared;
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Dapper;
 using System.Data;
+using NETStandard.Repository.Interfaces;
 
 namespace NETStandard.Repository
 {
@@ -36,41 +37,30 @@ namespace NETStandard.Repository
             return SqlMapper.Execute(Connection, command, new { Id = id }, Transaction);
         }
 
-        /// <summary>
-        /// Not implemented yet.
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public IEnumerable<Movie> FindBy(Func<Movie, bool> predicate)
-        {
-            throw new NotImplementedException();
-            //db.Query<Person, Address, Person>(
-            //sql,
-            //(person, address) => {
-            //    person.Address = address;
-            //    return person;
-            //},
-            //splitOn: "AddressId"
-            //).ToList();
-        }
-
         public IEnumerable<Movie> GetAll()
         {
-            var command = @"SELECT Id,Title,Description,Duration FROM Movies";
-            return SqlMapper.Query<Movie>(Connection, command, transaction: Transaction);
-        }
-
-        public IEnumerable<Movie> GetExecute()
-        {
-            var command = @"SELECT Id,Title,Description,Duration FROM Movies";
-            return SqlMapper.Query<Movie>(Connection, command, transaction: Transaction);
+            var command = @"SELECT M.*, D.* FROM Movies M INNER JOIN Directors D ON D.Id = M.DirectorId";
+            return SqlMapper.Query<Movie, Director, Movie>(Connection, command, (m, d) => { m.Director = d; return m; }, null, Transaction);
         }
 
         public Movie GetById(int id)
         {
-            var command = @"SELECT Id,Title,Description,Duration
-                            FROM Movies WHERE Id = @Id";
-            return SqlMapper.Query<Movie>(Connection, command, new { Id = id }, Transaction).FirstOrDefault();
+            var command = @"SELECT M.*, D.*
+                            FROM Movies M INNER JOIN Directors D ON D.Id = M.DirectorId WHERE M.Id = @Id";
+            //return SqlMapper.Query<Movie,Director>(Connection, command, new { Id = id }, Transaction).FirstOrDefault();
+            var movie = SqlMapper.Query<Movie, Director, Movie>(
+                Connection,
+                command,
+                (m, d) =>
+                {
+                    m.Director = d;
+                    return m;
+                },
+                new { Id = id },
+                Transaction).FirstOrDefault();
+            // We have to use splitOn parameter, if foreign key is not Id or ID
+
+            return movie;
         }
 
         public int Update(Movie t)

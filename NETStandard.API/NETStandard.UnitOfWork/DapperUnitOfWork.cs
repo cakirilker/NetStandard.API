@@ -13,7 +13,9 @@ namespace NETStandard.UnitOfWork
         private IDbConnection _connection;
         private IDbTransaction _transaction;
         private bool _disposed = false;
+
         private MovieRepository _movieRepository;
+        private DirectorRepository _directorRepository;
 
         public DapperUnitOfWork(string connectionString)
         {
@@ -21,12 +23,17 @@ namespace NETStandard.UnitOfWork
             _connection.Open();
             _transaction = _connection.BeginTransaction();
         }
+
         public MovieRepository MovieRepository
         {
             get
             {
                 return _movieRepository ?? (_movieRepository = new MovieRepository(_transaction));
             }
+        }
+        public DirectorRepository DirectorRepository
+        {
+            get { return _directorRepository ?? (_directorRepository = new DirectorRepository(_transaction)); }
         }
 
         public void Commit()
@@ -47,12 +54,11 @@ namespace NETStandard.UnitOfWork
                 ResetRepositories();
             }
         }
-
         private void ResetRepositories()
         {
             _movieRepository = null;
+            _directorRepository = null;
         }
-
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)

@@ -10,6 +10,8 @@ namespace NETStandard.Entities
         public string Title { get; set; }
         public string Description { get; set; }
         public int Duration { get; set; }
+        public Director Director { get; set; }
+
         public override string ToString()
         {
             return $"{Id} - {Title}, {Duration}";
