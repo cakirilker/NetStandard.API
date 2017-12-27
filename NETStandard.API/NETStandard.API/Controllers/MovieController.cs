@@ -87,7 +87,7 @@ namespace NETStandard.API.Controllers
             {
                 return BadRequest();
             }
-            return new NoContentResult();
+            return NoContent();
         }
 
         // DELETE: api/movie/5
@@ -109,7 +109,7 @@ namespace NETStandard.API.Controllers
             {
                 return BadRequest();
             }
-            return new NoContentResult();
+            return NoContent();
         }
     }
 }

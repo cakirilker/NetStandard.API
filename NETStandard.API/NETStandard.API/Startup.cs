@@ -27,7 +27,8 @@ namespace NETStandard.API
         {
             services.AddMvc();
             //services.AddTransient<MovieRepository>();
-            services.AddTransient<DapperUnitOfWork>();
+            services.AddTransient<IUnitOfWork, DapperUnitOfWork>();
+            //services.AddTransient<DapperUnitOfWork>();
             services.Configure<ConnectionConfig>(Configuration.GetSection("ConnectionStrings"));
         }
 
