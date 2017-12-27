@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using NETStandard.Repository;
 using System.Data;
 using System.Data.SqlClient;
-using System.Transactions;
+using NETStandard.Interfaces;
 
 namespace NETStandard.UnitOfWork
 {
@@ -13,17 +11,8 @@ namespace NETStandard.UnitOfWork
         private IDbConnection _connection;
         private IDbTransaction _transaction;
         private bool _disposed = false;
-
         private MovieRepository _movieRepository;
         private DirectorRepository _directorRepository;
-
-        public DapperUnitOfWork(string connectionString)
-        {
-            _connection = new SqlConnection(connectionString);
-            _connection.Open();
-            _transaction = _connection.BeginTransaction();
-        }
-
         public MovieRepository MovieRepository
         {
             get
@@ -36,6 +25,12 @@ namespace NETStandard.UnitOfWork
             get { return _directorRepository ?? (_directorRepository = new DirectorRepository(_transaction)); }
         }
 
+        public DapperUnitOfWork(string connectionString)
+        {
+            _connection = new SqlConnection(connectionString);
+            _connection.Open();
+            _transaction = _connection.BeginTransaction();
+        }
         public void Commit()
         {
             try

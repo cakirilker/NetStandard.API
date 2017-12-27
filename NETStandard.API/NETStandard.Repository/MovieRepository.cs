@@ -1,17 +1,13 @@
 ﻿using NETStandard.Entities;
-
-using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using System.Linq;
 using Dapper;
 using System.Data;
-using NETStandard.Repository.Interfaces;
+using NETStandard.Interfaces;
 
 namespace NETStandard.Repository
 {
-    public class MovieRepository : BaseRepository, IRepository<Movie>
+    public class MovieRepository : DapperRepositoryBase, IMovieRepository
     {
         public MovieRepository(IDbTransaction transaction) : base(transaction)
         {

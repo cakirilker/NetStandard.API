@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NETStandard.Repository;
 using NETStandard.UnitOfWork;
+using NETStandard.Interfaces;
 
 namespace NETStandard.API
 {
@@ -26,9 +27,7 @@ namespace NETStandard.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            //services.AddTransient<MovieRepository>();
             services.AddTransient<IUnitOfWork, DapperUnitOfWork>();
-            //services.AddTransient<DapperUnitOfWork>();
             services.Configure<ConnectionConfig>(Configuration.GetSection("ConnectionStrings"));
         }
 

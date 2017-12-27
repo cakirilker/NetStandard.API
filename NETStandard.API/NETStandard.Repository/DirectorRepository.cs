@@ -1,15 +1,13 @@
 ﻿using Dapper;
 using NETStandard.Entities;
-using NETStandard.Repository.Interfaces;
-using System;
+using NETStandard.Interfaces;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 
 namespace NETStandard.Repository
 {
-    public class DirectorRepository : BaseRepository, IRepository<Director>
+    public class DirectorRepository : DapperRepositoryBase, IDirectorRepository
     {
         public DirectorRepository(IDbTransaction transaction) : base(transaction)
         {
